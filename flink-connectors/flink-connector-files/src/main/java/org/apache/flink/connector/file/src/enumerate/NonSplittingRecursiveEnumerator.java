@@ -60,6 +60,9 @@ public class NonSplittingRecursiveEnumerator implements FileEnumerator {
      * Hidden files are considered files where the filename starts with '.' or with '_'.
      */
     public NonSplittingRecursiveEnumerator() {
+        /**
+         * 构造函数
+         */
         this(new DefaultFileFilter());
     }
 
@@ -90,6 +93,10 @@ public class NonSplittingRecursiveEnumerator implements FileEnumerator {
     private void addSplitsForPath(
             FileStatus fileStatus, FileSystem fs, ArrayList<FileSourceSplit> target)
             throws IOException {
+
+        /**
+         * 利用默认的 DefaultFileFilter 文件过滤器  排除了 .xxx和-xxx类型的文件
+         */
         if (!fileFilter.test(fileStatus.getPath())) {
             return;
         }
