@@ -84,6 +84,9 @@ public class StaticFileSplitEnumerator
 
     @Override
     public void handleSplitRequest(int subtask, @Nullable String hostname) {
+        /**
+         * 防止多次请求
+         */
         if (!context.registeredReaders().containsKey(subtask)) {
             // reader failed between sending the request and now. skip this request.
             return;
@@ -95,6 +98,9 @@ public class StaticFileSplitEnumerator
             LOG.info("Subtask {} {} is requesting a file source split", subtask, hostInfo);
         }
 
+        /**
+         * 根据
+         */
         final Optional<FileSourceSplit> nextSplit = splitAssigner.getNext(hostname);
         if (nextSplit.isPresent()) {
             final FileSourceSplit split = nextSplit.get();
