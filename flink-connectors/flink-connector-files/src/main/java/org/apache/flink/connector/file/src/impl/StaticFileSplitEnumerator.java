@@ -99,7 +99,7 @@ public class StaticFileSplitEnumerator
         }
 
         /**
-         * 根据
+         * 根据hostname获取对应的FileSourceSplit
          */
         final Optional<FileSourceSplit> nextSplit = splitAssigner.getNext(hostname);
         if (nextSplit.isPresent()) {

@@ -102,10 +102,16 @@ public class NonSplittingRecursiveEnumerator implements FileEnumerator {
         }
 
         if (!fileStatus.isDir()) {
+            /**
+             * 将目标文件转换为FileSourceSplit,并加入到target集合中
+             */
             convertToSourceSplits(fileStatus, fs, target);
             return;
         }
 
+        /**
+         * 递归处理多级文件目录
+         */
         final FileStatus[] containedFiles = fs.listStatus(fileStatus.getPath());
         for (FileStatus containedStatus : containedFiles) {
             addSplitsForPath(containedStatus, fs, target);

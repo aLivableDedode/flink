@@ -134,7 +134,7 @@ public abstract class AbstractFileSource<T, SplitT extends FileSourceSplit>
         /**
          * 创建FileEnumerator
          * 以简单的NonSplittingRecursiveEnumerator举例
-         *  ==》org.apache.flink.connector.file.src.enumerate.NonSplittingRecursiveEnumerator#NonSplittingRecursiveEnumerator()
+         *  ==》NonSplittingRecursiveEnumerator#NonSplittingRecursiveEnumerator()
          */
         final FileEnumerator enumerator = enumeratorFactory.create();
 
@@ -144,6 +144,9 @@ public abstract class AbstractFileSource<T, SplitT extends FileSourceSplit>
         try {
             // TODO - in the next cleanup pass, we should try to remove the need to "wrap unchecked"
             // here
+            /**
+             * 将输入的inputPaths 转化为FileSourceSplit集合splits
+             */
             splits = enumerator.enumerateSplits(inputPaths, enumContext.currentParallelism());
         } catch (IOException e) {
             throw new FlinkRuntimeException("Could not enumerate file splits", e);
