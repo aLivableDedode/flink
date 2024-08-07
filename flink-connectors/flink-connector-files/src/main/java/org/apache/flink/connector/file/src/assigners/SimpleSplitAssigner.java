@@ -42,6 +42,9 @@ public class SimpleSplitAssigner implements FileSplitAssigner {
 
     @Override
     public Optional<FileSourceSplit> getNext(String hostname) {
+        /**
+         * 真是随机获取splits,从已有的splits中按顺序分配
+         */
         final int size = splits.size();
         return size == 0 ? Optional.empty() : Optional.of(splits.remove(size - 1));
     }

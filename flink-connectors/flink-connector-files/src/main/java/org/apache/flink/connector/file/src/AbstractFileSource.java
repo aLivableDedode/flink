@@ -131,6 +131,11 @@ public abstract class AbstractFileSource<T, SplitT extends FileSourceSplit>
     public SplitEnumerator<SplitT, PendingSplitsCheckpoint<SplitT>> createEnumerator(
             SplitEnumeratorContext<SplitT> enumContext) {
 
+        /**
+         * 创建FileEnumerator
+         * 以简单的NonSplittingRecursiveEnumerator举例
+         *  ==》NonSplittingRecursiveEnumerator#NonSplittingRecursiveEnumerator()
+         */
         final FileEnumerator enumerator = enumeratorFactory.create();
 
         // read the initial set of splits (which is also the total set of splits for bounded
@@ -139,6 +144,9 @@ public abstract class AbstractFileSource<T, SplitT extends FileSourceSplit>
         try {
             // TODO - in the next cleanup pass, we should try to remove the need to "wrap unchecked"
             // here
+            /**
+             * 将输入的inputPaths 转化为FileSourceSplit集合splits
+             */
             splits = enumerator.enumerateSplits(inputPaths, enumContext.currentParallelism());
         } catch (IOException e) {
             throw new FlinkRuntimeException("Could not enumerate file splits", e);
@@ -194,10 +202,24 @@ public abstract class AbstractFileSource<T, SplitT extends FileSourceSplit>
         final SplitEnumeratorContext<FileSourceSplit> fileSplitContext =
                 (SplitEnumeratorContext<FileSourceSplit>) context;
 
+        /**
+         *  Collection<FileSourceSplit> splits 这时候是一个文件一个对象
+         *  assignerFactory ==》FileSplitAssigner.Provider  作用是文件分派器 决定文件被哪个节点处理，保证文件分割出来的splits
+         *  的处理顺序
+         *
+         *  其实现有2种，
+         *  1、SimpleSplitAssigner： 【随机】其实现就是内部维护一个Splits集合，下游获取时则从集合中获取最后一个Split
+         *  2、LocalityAwareSplitAssigner：【位置感知分配器】
+         *
+         *  猜测用的是LocalityAwareSplitAssigner？？
+         */
         final FileSplitAssigner splitAssigner = assignerFactory.create(splits);
 
         if (continuousEnumerationSettings == null) {
             // bounded case
+            /**
+             * 适用于batch StaticFileSplitEnumerator
+             */
             return castGeneric(new StaticFileSplitEnumerator(fileSplitContext, splitAssigner));
         } else {
             // unbounded case
@@ -205,6 +227,9 @@ public abstract class AbstractFileSource<T, SplitT extends FileSourceSplit>
                 alreadyProcessedPaths = splitsToPaths(splits);
             }
 
+            /**
+             * 适用于stream ContinuousFileSplitEnumerator
+             */
             return castGeneric(
                     new ContinuousFileSplitEnumerator(
                             fileSplitContext,

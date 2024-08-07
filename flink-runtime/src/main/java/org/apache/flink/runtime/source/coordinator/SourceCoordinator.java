@@ -121,6 +121,9 @@ public class SourceCoordinator<SplitT extends SourceSplit, EnumChkT>
                     context.getCoordinatorContext().getUserCodeClassloader();
             try (TemporaryClassLoaderContext ignored =
                     TemporaryClassLoaderContext.of(userCodeClassLoader)) {
+                /**
+                 * 实例化enumerator
+                 */
                 enumerator = source.createEnumerator(context);
             } catch (Throwable t) {
                 ExceptionUtils.rethrowIfFatalErrorOrOOM(t);
